@@ -1,0 +1,5 @@
+*.out
+hashmap
+instructions.txt
+test.c
+-a
