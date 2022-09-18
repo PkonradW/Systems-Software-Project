@@ -3,7 +3,7 @@
 #include <string.h>
 #include <stdbool.h>
 
-#define MAX 30
+#define MAX 5
 
 typedef struct hashLink {
     char name[64];
@@ -20,11 +20,11 @@ int hash(char*);
 void initialize(hashMap*);
 
 int main(int argc, char *argv[] ){
-    char* fileName = argv[1];
+    char* fileName = malloc(strlen(argv[1]) + 1); 
+    strcpy(fileName, argv[1]);
     FILE *fp;
     char buffer[255];
     char *token;
-    //char *name;
     int num = 0;
     bool hasNum = false;
     hashMap mappy;
@@ -46,11 +46,11 @@ int main(int argc, char *argv[] ){
             hasNum = false;
             num = 0;
         }
-        printf("----------\n"
-               "name   : %s\n"
-               "number : %d\n"
-               "hashval: %d\n"
-               "----------\n", name, num, hash(name));
+        // printf("----------\n"
+        //        "name   : %s\n"
+        //        "number : %d\n"
+        //        "hashval: %d\n"
+        //        "----------\n", name, num, hash(name));
         insert(num, name, &mappy);
         free(name);
     }
@@ -66,6 +66,19 @@ int main(int argc, char *argv[] ){
         - hash
     Returns:
         none
+    Does:
+        check if there is number
+        if input has number
+            if already exists
+                report error
+            if not
+                insert new link
+                print that new link was inserted
+        if input has no number
+            if input == value at location
+                print out that you found the input at that location
+            if input not found
+                print not found
 */
 void insert(int num, char* name, hashMap *mappy) {
     hashLink link;
@@ -73,10 +86,11 @@ void insert(int num, char* name, hashMap *mappy) {
     int hashVal = hash(name);
     // how to check if collision?
     oldLink = mappy->table[hashVal]; // this ain't it chief 
-    
+    printf("----------------------------------\n");
     if (num) {
         if (oldLink.exists) {
-            printf("Collision: %s found at location %d with number %d\n", oldLink.name, hashVal, oldLink.number);
+            printf("Collion: %s found at location %d with number %d\n", oldLink.name, hashVal, oldLink.number);
+            printf("[%s %d] not inserted because the hashVal is %d\n", name, num, hashVal);
         } else {
             strcpy(link.name,name);
             link.number = num;
@@ -85,39 +99,23 @@ void insert(int num, char* name, hashMap *mappy) {
             printf("Stored %s %d at index %d\n", name, num, hashVal);
         }
     } else { // if the input has no number and is just name
-        if (strcmp(name,oldLink.name)) { // evaluates true if the strings are not the same
-            printf("%s not found\n",name);
+        if (strcmp(name,oldLink.name)!=0) { // evaluates true if the strings are not the same
+            printf("%s not found, oldLink.name is %s\n",name,oldLink.name);
         } else {
-            printf("%s found at index %d with value %d\n", name, hashVal, oldLink.number);
+            printf("%s found at index %d with value %d \n", name, hashVal, oldLink.number);
         }
     }
-    /*
-        todo: 
-            check if there is number
-            if (input has number)
-                if already exists
-                    report error
-                if not
-                    insert new link
-                    print that new link was inserted
-            if (input has no number)
-                if input == value at location
-                    print out that you found the input at that location
-                if input not found
-                    print not found
-    */
-                
-            
+    printf("----------------------------------\n");
 }
 /*
     Really bad hashing algorithm, made with no consideration for anything
 */
 int hash(char* name){
-    int value;
+    int value = 0; // gotta initialize it
     for (int i = 0; i < strlen(name); i++) {
         value += ( (int) name[i] * (i+1));
     }
-    return value % (MAX + 1);
+    return value % (MAX);
 }
 /*
     because structs are not classes
