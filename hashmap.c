@@ -108,12 +108,12 @@ void insert(int num, char* name, hashMap *mappy) {
     printf("----------------------------------\n");
 }
 /*
-    Really bad hashing algorithm, made with no consideration for anything
+    sbdm algorithm from https://stackoverflow.com/questions/14409466/simple-hash-functions
 */
 int hash(char* name){
     int value = 0; // gotta initialize it
     for (int i = 0; i < strlen(name); i++) {
-        value += ( (int) name[i] * (i+1));
+        value = name[i] + (value << 6) + (value << 16) - value;
     }
     return value % (MAX);
 }
